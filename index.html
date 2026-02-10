@@ -5,14 +5,22 @@
   <title>JSONSearch</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap можно оставить -->
+  <!-- Bootstrap -->
   <link rel="stylesheet" href="assets/bootstrap.min.css">
-
-  <!-- Новый стиль -->
   <link rel="stylesheet" href="assets/minecraft-2026.css">
 
   <script src="assets/jquery-3.3.1.min.js"></script>
   <script src="assets/bootstrap.min.js"></script>
+
+  <style>
+    /* Немного подправим карточки сообщений */
+    .message-card p {
+      margin: 0 0 5px 0;
+    }
+    .message-card button {
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
@@ -43,7 +51,6 @@
     >
 
     <h3 id="results" class="mc-results"></h3>
-
     <div id="filter-records"></div>
   </main>
 </div>
@@ -55,5 +62,6 @@
 
 <script src="assets/regex-weburl.js"></script>
 <script src="main.js"></script>
+
 </body>
 </html>

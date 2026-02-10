@@ -1,41 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <title>JSONSearch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap можно оставить -->
   <link rel="stylesheet" href="assets/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/style.css">
+
+  <!-- Новый стиль -->
+  <link rel="stylesheet" href="assets/minecraft-2026.css">
+
   <script src="assets/jquery-3.3.1.min.js"></script>
   <script src="assets/bootstrap.min.js"></script>
-  <title>JSONSearch | Web live search engine for JSON database</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1" />
-  <meta name="referrer" content="none" />
 </head>
 <body>
-  <div class="container" style="padding:50px 50px;">
-  <h1 align="center">JSONSearch</h1>
-  <p align="center">Web live search engine for JSON database</p>
-  <div class="col-md-12 text-center">
-  <a href="https://jsonsearch.github.io/" class="btn btn-primary" rel="noreferrer noopener nofollow" target="_top">Database URL Input</a>
-  <a href="https://github.com/jsonsearch/jsonsearch" class="btn btn-primary" rel="noreferrer noopener nofollow" target="_blank">Contribute on GitHub</a>
-  <a href="https://jsonsearch.github.io/jsonsearch/editor.html" class="btn btn-primary" rel="noreferrer noopener nofollow" target="_blank">Create a Database</a>
-  </div><hr>
-	<form role="form"><br>
-	<div class="flex-justify">
-		<h5 align="left"><a id="permalink" href="" title="Click to copy">Permalink</a></h5>
-		<h5 align="right" style="padding-right:0;">(enter * for all <span id="entries"></span> entries)</h5>
-	</div>
-        <div class="form-group">
-            <input type="input" class="form-control input-lg" id="txt-search" placeholder="Search the JSON database" readonly>
-	    <h3 id="results" align="center"></h3>
-        </div>
-	</form>
-	<div id="filter-records"></div>
-  </div>
-  <div class="error-banner">
-    <p style="color:black;" id="error-text"></p>
-    <a class="close-banner">&times;</a>
-  </div>
-  <script src="assets/regex-weburl.js"></script>
-  <script src="main.js"></script>
+
+<div class="mc-container">
+  <header class="mc-header">
+    <h1>JSONSearch</h1>
+    <p>Live search engine for JSON databases</p>
+
+    <div class="mc-actions">
+      <a href="https://jsonsearch.github.io/" class="mc-btn">Database URL</a>
+      <a href="https://github.com/jsonsearch/jsonsearch" class="mc-btn">GitHub</a>
+      <a href="https://jsonsearch.github.io/jsonsearch/editor.html" class="mc-btn">Create DB</a>
+    </div>
+  </header>
+
+  <main class="mc-panel">
+    <div class="mc-panel-header">
+      <a id="permalink" href="#">Permalink</a>
+      <span>( * = all <span id="entries"></span> entries )</span>
+    </div>
+
+    <input
+      type="text"
+      id="txt-search"
+      class="mc-input"
+      placeholder="Search JSON database"
+      readonly
+    >
+
+    <h3 id="results" class="mc-results"></h3>
+
+    <div id="filter-records"></div>
+  </main>
+</div>
+
+<div class="error-banner">
+  <p id="error-text"></p>
+  <a class="close-banner">&times;</a>
+</div>
+
+<script src="assets/regex-weburl.js"></script>
+<script src="main.js"></script>
 </body>
 </html>

@@ -74,7 +74,6 @@ function loadNextChunk(){
             loading = false;
         },
         error: function(){
-            // Больше чанков нет — это нормально
             loading = false;
             console.log("Все чанки загружены");
         }
@@ -98,64 +97,69 @@ function toggleText(btn){
 
 // Функция поиска и рендеринга
 function performSearch(searchField){
-    if(!searchField || String(searchField).trim() === ""){
-        $filterRecords && $filterRecords.html('');
+    if(!searchField || String(searchField).trim().length < 3){
+        $filterRecords && $filterRecords.html(''); 
         $results && $results.html('');
-        return;
+        return; // меньше 3 символов — не ищем
     }
 
     searchField = String(searchField).trim();
-    var showAll = searchField.slice(0,1) === "*";
-    var regex = null;
-    if(!showAll){
-        try { regex = new RegExp(escapeRegExp(searchField), "i"); }
-        catch(e){ regex = null; }
-    }
+    $results && $results.html("Ищется..."); // сразу показываем сообщение
 
-    var out = '<div class="row">';
-    var count = 0;
-
-    data.forEach(function(val){
-        var author = val && val.author ? String(val.author) : "";
-        var text = val && val.text ? String(val.text) : "";
-        var date = val && val.date ? String(val.date) : "";
-        var post_number = val && (val.post_number || val.post_number === 0) ? val.post_number : "";
-
-        var matches = showAll || (!regex ? false : ((author && author.search(regex) !== -1) || (text && text.search(regex) !== -1)));
-        if(!showAll && regex === null){
-            var needle = searchField.toLowerCase();
-            matches = (author && author.toLowerCase().indexOf(needle) !== -1) || (text && text.toLowerCase().indexOf(needle) !== -1);
+    // Даем 5 секунд на загрузку чанков перед подсчетом
+    setTimeout(function(){
+        var showAll = searchField.slice(0,1) === "*";
+        var regex = null;
+        if(!showAll){
+            try { regex = new RegExp(escapeRegExp(searchField), "i"); }
+            catch(e){ regex = null; }
         }
 
-        if(showAll || matches){
-            count++;
-            var safeAuthor = escapeHtml(author) || "—";
-            var safeText = escapeHtml(text).replace(/\r?\n/g, "<br>");
-            var safeDate = escapeHtml(date);
+        var out = '<div class="row">';
+        var count = 0;
 
-            out += '<div class="col-md-6 well message-card" style="margin-bottom:20px;">';
-            out += '<div class="col-md-12">';
-            out += '<h5 style="margin-bottom:5px;">' + safeAuthor + '</h5>';
-            out += '<p class="message-text" style="max-height:150px; overflow:auto; white-space:pre-wrap; margin-bottom:6px;">' + safeText + '</p>';
+        data.forEach(function(val){
+            var author = val && val.author ? String(val.author) : "";
+            var text = val && val.text ? String(val.text) : "";
+            var date = val && val.date ? String(val.date) : "";
+            var post_number = val && (val.post_number || val.post_number === 0) ? val.post_number : "";
 
-            if(safeDate) out += '<small>' + safeDate + '</small><br>';
-            if(post_number){
-                var href = 'https://ru-minecraft.ru/forum/showtopic-15361/findpost-' + encodeURIComponent(post_number) + '/';
-                out += '<a class="btn btn-sm btn-primary" style="margin-top:5px; margin-right:6px;" href="' + href + '" target="_blank" rel="noopener noreferrer">Перейти к сообщению</a>';
+            var matches = showAll || (!regex ? false : ((author && author.search(regex) !== -1) || (text && text.search(regex) !== -1)));
+            if(!showAll && regex === null){
+                var needle = searchField.toLowerCase();
+                matches = (author && author.toLowerCase().indexOf(needle) !== -1) || (text && text.toLowerCase().indexOf(needle) !== -1);
             }
 
-            if(text && text.length > 300){
-                out += '<button class="btn btn-sm btn-link" style="margin-top:6px; padding-left:0;" onclick="toggleText(this)">Показать больше</button>';
+            if(showAll || matches){
+                count++;
+                var safeAuthor = escapeHtml(author) || "—";
+                var safeText = escapeHtml(text).replace(/\r?\n/g, "<br>");
+                var safeDate = escapeHtml(date);
+
+                out += '<div class="col-md-6 well message-card" style="margin-bottom:20px;">';
+                out += '<div class="col-md-12">';
+                out += '<h5 style="margin-bottom:5px;">' + safeAuthor + '</h5>';
+                out += '<p class="message-text" style="max-height:150px; overflow:auto; white-space:pre-wrap; margin-bottom:6px;">' + safeText + '</p>';
+
+                if(safeDate) out += '<small>' + safeDate + '</small><br>';
+                if(post_number){
+                    var href = 'https://ru-minecraft.ru/forum/showtopic-15361/findpost-' + encodeURIComponent(post_number) + '/';
+                    out += '<a class="btn btn-sm btn-primary" style="margin-top:5px; margin-right:6px;" href="' + href + '" target="_blank" rel="noopener noreferrer">Перейти к сообщению</a>';
+                }
+
+                if(text && text.length > 300){
+                    out += '<button class="btn btn-sm btn-link" style="margin-top:6px; padding-left:0;" onclick="toggleText(this)">Показать больше</button>';
+                }
+
+                out += '</div></div>';
+                if(count % 2 === 0){ out += '</div><div class="row">'; }
             }
+        });
 
-            out += '</div></div>';
-            if(count % 2 === 0){ out += '</div><div class="row">'; }
-        }
-    });
-
-    out += '</div>';
-    $results && $results.html(count + " results");
-    $filterRecords && $filterRecords.html(out);
+        out += '</div>';
+        $results && $results.html(count + " results");
+        $filterRecords && $filterRecords.html(out);
+    }, 5000); // ждём 5 секунд
 }
 
 // Документ готов

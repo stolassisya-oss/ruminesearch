@@ -106,14 +106,19 @@ function performSearch(searchField){
     searchField = String(searchField).trim();
     $results && $results.html("Ищется..."); // сразу показываем сообщение
 
-    // Даем 5 секунд на загрузку чанков перед подсчетом
     setTimeout(function(){
-        var showAll = searchField.slice(0,1) === "*";
-        var regex = null;
-        if(!showAll){
-            try { regex = new RegExp(escapeRegExp(searchField), "i"); }
-            catch(e){ regex = null; }
+        var authorFilter = null;
+        var textFilter = searchField;
+
+        // Проверяем, есть ли author: что-то
+        var match = searchField.match(/author:([^\s]+)\s*(.*)/i);
+        if(match){
+            authorFilter = match[1];   // имя автора
+            textFilter = match[2];     // остальной текст
         }
+
+        var regexAuthor = authorFilter ? new RegExp(escapeRegExp(authorFilter), "i") : null;
+        var regexText = textFilter ? new RegExp(escapeRegExp(textFilter), "i") : null;
 
         var out = '<div class="row">';
         var count = 0;
@@ -124,13 +129,16 @@ function performSearch(searchField){
             var date = val && val.date ? String(val.date) : "";
             var post_number = val && (val.post_number || val.post_number === 0) ? val.post_number : "";
 
-            var matches = showAll || (!regex ? false : ((author && author.search(regex) !== -1) || (text && text.search(regex) !== -1)));
-            if(!showAll && regex === null){
-                var needle = searchField.toLowerCase();
-                matches = (author && author.toLowerCase().indexOf(needle) !== -1) || (text && text.toLowerCase().indexOf(needle) !== -1);
+            var matches = true;
+
+            if(regexAuthor){
+                matches = author && author.search(regexAuthor) !== -1;
+            }
+            if(matches && regexText && textFilter){
+                matches = text && text.search(regexText) !== -1;
             }
 
-            if(showAll || matches){
+            if(matches){
                 count++;
                 var safeAuthor = escapeHtml(author) || "—";
                 var safeText = escapeHtml(text).replace(/\r?\n/g, "<br>");
@@ -140,17 +148,14 @@ function performSearch(searchField){
                 out += '<div class="col-md-12">';
                 out += '<h5 style="margin-bottom:5px;">' + safeAuthor + '</h5>';
                 out += '<p class="message-text" style="max-height:150px; overflow:auto; white-space:pre-wrap; margin-bottom:6px;">' + safeText + '</p>';
-
                 if(safeDate) out += '<small>' + safeDate + '</small><br>';
                 if(post_number){
                     var href = 'https://ru-minecraft.ru/forum/showtopic-15361/findpost-' + encodeURIComponent(post_number) + '/';
                     out += '<a class="btn btn-sm btn-primary" style="margin-top:5px; margin-right:6px;" href="' + href + '" target="_blank" rel="noopener noreferrer">Перейти к сообщению</a>';
                 }
-
                 if(text && text.length > 300){
                     out += '<button class="btn btn-sm btn-link" style="margin-top:6px; padding-left:0;" onclick="toggleText(this)">Показать больше</button>';
                 }
-
                 out += '</div></div>';
                 if(count % 2 === 0){ out += '</div><div class="row">'; }
             }
